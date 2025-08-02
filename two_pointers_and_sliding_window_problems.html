@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures & Algorithms Visualizer</title>
+    <!-- 1. Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 2. Load React libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- 3. Load Babel to convert JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- 4. Your React code goes inside a script tag with type="text/babel" -->
+    <script type="text/babel">
+        // Helper Components
+        const PatternBadge = ({ type }) => {
+            const styles = {
+                'SLIDING WINDOW': 'bg-gradient-to-r from-blue-400 to-cyan-400 shadow-blue-200',
+                'TWO POINTERS': 'bg-gradient-to-r from-green-400 to-lime-400 shadow-green-200',
+                'THREE POINTERS': 'bg-gradient-to-r from-yellow-400 to-amber-400 shadow-yellow-200',
+            };
+            const icons = {
+                'SLIDING WINDOW': '🪟',
+                'TWO POINTERS': '↔️',
+                'THREE POINTERS': '🚦',
+            };
+            return (
+                <div className={`inline-block px-4 py-2 text-white rounded-full font-bold text-sm mb-5 shadow-lg ${styles[type]}`}>
+                    {icons[type]} {type} PATTERN
+                </div>
+            );
+        };
+
+        const ComplexityInfo = ({ time, space }) => (
+            <div className="bg-blue-50 p-5 rounded-xl mb-6 border-l-4 border-blue-500">
+                <h3 className="text-blue-600 font-bold mb-3 text-lg">📊 Complexity Analysis</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-3 rounded-lg text-center font-semibold text-gray-700 shadow-sm">
+                        <strong>Time Complexity:</strong><br />{time}
+                    </div>
+                    <div className="bg-white p-3 rounded-lg text-center font-semibold text-gray-700 shadow-sm">
+                        <strong>Space Complexity:</strong><br />{space}
+                    </div>
+                </div>
+            </div>
+        );
+
+        const InfoCard = ({ title, value }) => (
+            <div className="bg-gradient-to-br from-slate-50 to-indigo-100 p-4 rounded-xl border-l-4 border-indigo-400 shadow-md transition-all duration-300 hover:shadow-lg">
+                <h3 className="text-gray-600 font-bold mb-1 text-sm">{title}</h3>
+                <div className="text-indigo-600 font-bold text-xl truncate">{value}</div>
+            </div>
+        );
+
+        const CodeSection = ({ pythonCode, javaCode, differences }) => {
+            const [activeLang, setActiveLang] = React.useState('python');
+
+            return (
+                <div className="mt-8 bg-slate-100/70 rounded-xl p-6">
+                    <h3 className="text-gray-800 font-bold mb-4 text-xl">💻 Implementation</h3>
+                    <div className="flex gap-2 mb-4">
+                        <button
+                            onClick={() => setActiveLang('python')}
+                            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${activeLang === 'python' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-200'}`}
+                        >
+                            Python
+                        </button>
+                        <button
+                            onClick={() => setActiveLang('java')}
+                            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${activeLang === 'java' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-200'}`}
+                        >
+                            Java
+                        </button>
+                    </div>
+                    <div className="relative min-h-[200px]">
+                        <div className={`bg-[#1e1e1e] rounded-lg overflow-hidden transition-opacity duration-300 ${activeLang === 'python' ? 'opacity-100' : 'opacity-0 h-0 pointer-events-none'}`}>
+                            <pre className="p-5 text-sm text-gray-300 font-mono overflow-x-auto"><code>{pythonCode}</code></pre>
+                        </div>
+                        <div className={`bg-[#1e1e1e] rounded-lg overflow-hidden transition-opacity duration-300 absolute top-0 left-0 w-full ${activeLang === 'java' ? 'opacity-100' : 'opacity-0 h-0 pointer-events-none'}`}>
+                            <pre className="p-5 text-sm text-gray-300 font-mono overflow-x-auto"><code>{javaCode}</code></pre>
+                        </div>
+                    </div>
+                     <div className="bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 p-4 mt-4 rounded-r-lg">
+                        <h4 className="font-bold mb-2">🔄 Key Differences Python vs Java:</h4>
+                        <ul className="list-disc list-inside text-sm">
+                            {differences.map((diff, i) => <li key={i}>{diff}</li>)}
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
+        const AlgorithmSteps = ({ steps, activeStep }) => (
+             <div className="bg-slate-100/70 p-5 rounded-xl my-6">
+                <h3 className="font-bold text-gray-800 mb-4 text-lg">🔍 Algorithm Steps:</h3>
+                <div className="grid gap-2">
+                    {steps.map((step, i) => (
+                        <div key={i} className={`p-3 rounded-lg border-l-4 transition-all duration-300 ${activeStep === i ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-indigo-300 transform translate-x-2 shadow-lg' : 'bg-white border-gray-200'}`}>
+                            {i+1}. {step}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Generic parse functions
+        const parseNumArray = (input) => input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+        const parseStr = (input) => input;
+
+        // Generic Component for Algorithms
+        const AlgorithmComponent = ({ config }) => {
+            const [inputs, setInputs] = React.useState(config.getInitialState().inputs);
+            const [history, setHistory] = React.useState([config.getInitialState(inputs)]);
+            const [currentStep, setCurrentStep] = React.useState(0);
+
+            const reset = () => {
+                const initialInputs = config.getInitialState().inputs;
+                setInputs(initialInputs);
+                setHistory([config.getInitialState(initialInputs)]);
+                setCurrentStep(0);
+            };
+            
+            React.useEffect(() => {
+                reset();
+            }, [config.name]);
+
+            const handleInputChange = (key, value) => {
+                const newInputs = { ...inputs, [key]: value };
+                setInputs(newInputs);
+                setHistory([config.getInitialState(newInputs)]);
+                setCurrentStep(0);
+            };
+
+            const generateHistory = () => {
+                const newHistory = config.generateHistory(inputs);
+                setHistory(newHistory);
+                setCurrentStep(0);
+            };
+
+            const handleNext = () => {
+                setCurrentStep(prev => Math.min(prev + 1, history.length - 1));
+            };
+
+            const handlePrev = () => {
+                setCurrentStep(prev => Math.max(prev - 1, 0));
+            };
+
+            const currentState = history[currentStep];
+
+            return (
+                <div>
+                    <PatternBadge type={config.pattern} />
+                    <ComplexityInfo time={config.complexity.time} space={config.complexity.space} />
+
+                    <div className="flex flex-wrap items-center gap-4 mb-6">
+                        {Object.entries(config.controls).map(([key, control]) => (
+                            <input
+                                key={key}
+                                type={control.type}
+                                value={inputs[key]}
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                className="p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 outline-none transition w-full sm:w-auto"
+                                placeholder={control.placeholder}
+                            />
+                        ))}
+                        <button onClick={generateHistory} className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition">Visualize</button>
+                        <button onClick={reset} className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition">Reset</button>
+                    </div>
+
+                    <div className="flex justify-center items-center gap-4 my-4">
+                        <button onClick={handlePrev} disabled={currentStep === 0} className="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition">Previous</button>
+                        <span className="font-mono text-gray-700">Step: {currentStep} / {history.length - 1}</span>
+                        <button onClick={handleNext} disabled={currentStep === history.length - 1} className="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition">Next</button>
+                    </div>
+
+                    {config.DisplayComponent && <config.DisplayComponent {...currentState} />}
+                    {config.InfoPanelComponent && <config.InfoPanelComponent {...currentState} />}
+                    {config.steps && <AlgorithmSteps steps={config.steps} activeStep={currentState.activeStep} />}
+                    <CodeSection {...config.code} />
+                </div>
+            );
+        };
+
+        // Configuration for each algorithm
+
+        const commonDisplay = ({ elements }) => (
+            <div className="flex justify-center flex-wrap gap-1.5 my-8 min-h-[60px] items-center">
+                {elements.map((el, i) => (
+                    <div key={i} className={`w-12 h-12 flex items-center justify-center font-mono text-lg rounded-lg border-2 transition-all duration-300 ${el.classes.join(' ')}`}>{el.val}</div>
+                ))}
+            </div>
+        );
+
+        const containerDisplay = ({ elements }) => (
+             <div className="flex justify-center gap-0.5 my-8 min-h-[200px] items-end">
+                {elements.map((el, i) => (
+                    <div key={i} title={`Height: ${el.val}`} className={`flex-grow flex items-end justify-center font-mono text-xs rounded-t-md transition-all duration-300 ${el.classes.join(' ')}`} style={{height: `${el.val * 15 + 20}px`, minWidth: '15px'}}>
+                        <span className="transform -rotate-90 whitespace-nowrap origin-bottom-right -translate-y-2 text-white font-bold">{el.val}</span>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const configs = {
+            longestSubstring: {
+                name: 'Longest Substring',
+                pattern: 'SLIDING WINDOW',
+                complexity: { time: 'O(n)', space: 'O(min(m, n))' },
+                controls: { input: { type: 'text', placeholder: 'Enter string' } },
+                getInitialState: (inputs = { input: 'abcabcbb' }) => ({
+                    inputs,
+                    elements: parseStr(inputs.input).split('').map(val => ({ val, classes: [] })),
+                    left: 0, right: 0, maxLength: 0, window: '', charMap: {}, activeStep: null,
+                }),
+                DisplayComponent: ({ elements, charMap }) => (
+                    <>
+                        {commonDisplay({ elements })}
+                        <div className="my-6">
+                            <h3 className="font-bold text-gray-800 mb-3 text-lg">📊 Character Position HashMap</h3>
+                            <div className="bg-green-50 p-4 rounded-xl border-l-4 border-green-500 flex flex-wrap gap-3 font-mono text-sm min-h-[50px]">
+                                {Object.keys(charMap).length > 0 ? Object.entries(charMap).map(([key, val]) => (
+                                    <div key={key} className="bg-white p-2 rounded-md border-2 border-green-400 shadow-sm">{`'${key}': ${val}`}</div>
+                                )) : '{empty}'}
+                            </div>
+                        </div>
+                    </>
+                ),
+                InfoPanelComponent: ({ window, maxLength, left, right }) => (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <InfoCard title="Current Window" value={`"${window}"`} />
+                        <InfoCard title="Window Length" value={window.length} />
+                        <InfoCard title="Max Length" value={maxLength} />
+                        <InfoCard title="Left Pointer" value={left} />
+                        <InfoCard title="Right Pointer" value={right} />
+                    </div>
+                ),
+                steps: [ "Initialize pointers, max length, and character map.", "Expand window by moving right pointer.", "If char exists in window, contract by moving left pointer past last occurrence.", "Update character's last seen position in map.", "Update maximum length if current window is longer.", "Repeat until right pointer reaches the end." ],
+                code: { pythonCode: `def lengthOfLongestSubstring(s):\n    char_map = {}\n    left = 0\n    max_length = 0\n    for right, char in enumerate(s):\n        if char in char_map and char_map[char] >= left:\n            left = char_map[char] + 1\n        char_map[char] = right\n        max_length = max(max_length, right - left + 1)\n    return max_length`, javaCode: `import java.util.HashMap;\nimport java.util.Map;\n\npublic int lengthOfLongestSubstring(String s) {\n    Map<Character, Integer> charMap = new HashMap<>();\n    int left = 0;\n    int maxLength = 0;\n    for (int right = 0; right < s.length(); right++) {\n        char currentChar = s.charAt(right);\n        if (charMap.containsKey(currentChar) && charMap.get(currentChar) >= left) {\n            left = charMap.get(currentChar) + 1;\n        }\n        charMap.put(currentChar, right);\n        maxLength = Math.max(maxLength, right - left + 1);\n    }\n    return maxLength;\n}`, differences: [ "Data Types: Python dict vs Java HashMap<>", "String Access: Python s[i] vs Java s.charAt(i)", "Dictionary Methods: Python 'in' vs Java containsKey()", ] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const s = inputs.input;
+                    let localLeft = 0, localMaxLen = 0;
+                    const localCharMap = {};
+                    
+                    history.push({ inputs, elements: s.split('').map(val => ({ val, classes: [] })), left: 0, right: 0, maxLength: 0, window: '', charMap: {}, activeStep: 0 });
+
+                    for (let r = 0; r < s.length; r++) {
+                        const char = s[r];
+                        if (localCharMap[char] !== undefined && localCharMap[char] >= localLeft) {
+                            localLeft = localCharMap[char] + 1;
+                        }
+                        localCharMap[char] = r;
+                        if (r - localLeft + 1 > localMaxLen) {
+                            localMaxLen = r - localLeft + 1;
+                        }
+                        const newElements = s.split('').map((val, i) => ({ val, classes: [ i >= localLeft && i <= r && 'window', i === localLeft && 'left-pointer', i === r && 'right-pointer'].filter(Boolean) }));
+                        history.push({ inputs, elements: newElements, left: localLeft, right: r, maxLength: localMaxLen, window: s.slice(localLeft, r + 1), charMap: { ...localCharMap }, activeStep: 4 });
+                    }
+                    history.push({...history[history.length-1], activeStep: 5});
+                    return history;
+                }
+            },
+            reverseString: {
+                name: 'Reverse String',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'Enter string' } },
+                getInitialState: (inputs = { input: 'hello' }) => ({ inputs, elements: parseStr(inputs.input).split('').map(val => ({ val, classes: [] })), result: '', activeStep: null, }),
+                DisplayComponent: ({ elements, result }) => ( <> {commonDisplay({ elements })} <div className="text-center font-semibold text-lg bg-green-100 p-4 rounded-lg text-green-800 min-h-[50px]"> {result || 'Result will be shown here'} </div> </> ),
+                InfoPanelComponent: () => null,
+                steps: [ "Initialize left and right pointers at the ends of the string.", "While left pointer is less than right pointer, swap the characters.", "Move left pointer one step to the right.", "Move right pointer one step to the left.", "Repeat until pointers meet or cross." ],
+                code: { pythonCode: `def reverseString(s: List[str]) -> None:\n    left, right = 0, len(s) - 1\n    while left < right:\n        s[left], s[right] = s[right], s[left]\n        left += 1\n        right -= 1`, javaCode: `public void reverseString(char[] s) {\n    int left = 0, right = s.length - 1;\n    while (left < right) {\n        char temp = s[left];\n        s[left] = s[right];\n        s[right] = temp;\n        left++;\n        right--;\n    }\n}`, differences: [ "String Mutability: Python strings are immutable. Java's char[] is mutable.", "Swapping: Python uses tuple assignment. Java requires a temporary variable.", ] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    let arr = parseStr(inputs.input).split(''); let left = 0; let right = arr.length - 1;
+                    history.push({ inputs, elements: arr.map(val => ({ val, classes: [] })), result: `Original: "${arr.join('')}"`, activeStep: 0 });
+                    while (left < right) {
+                        history.push({ inputs, elements: arr.map((val, i) => ({ val, classes: [(i === left || i === right) && 'swapping', i === left && 'left-pointer', i === right && 'right-pointer'].filter(Boolean) })), result: `Swapping '${arr[left]}' and '${arr[right]}'`, activeStep: 1 });
+                        [arr[left], arr[right]] = [arr[right], arr[left]];
+                        history.push({ inputs, elements: arr.map((val, i) => ({ val, classes: (i === left || i === right) ? ['sorted'] : [] })), result: `Current: "${arr.join('')}"`, activeStep: 2 });
+                        left++; right--;
+                    }
+                    history.push({ inputs, elements: arr.map(val => ({ val, classes: ['sorted'] })), result: `Final Result: "${arr.join('')}"`, activeStep: 4 });
+                    return history;
+                }
+            },
+            minMax: {
+                name: 'Min Max Array',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 3,1,4,1,5,9,2' } },
+                getInitialState: (inputs = { input: '3,1,4,1,5,9,2' }) => {
+                    const arr = parseNumArray(inputs.input);
+                    return { inputs, elements: arr.map(val => ({ val, classes: [] })), min: arr.length > 0 ? arr[0] : null, max: arr.length > 0 ? arr[0] : null, comparisons: 0, activeStep: null, };
+                },
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ min, max, comparisons }) => (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <InfoCard title="Current Min" value={min} />
+                        <InfoCard title="Current Max" value={max} />
+                        <InfoCard title="Comparisons" value={comparisons} />
+                    </div>
+                ),
+                steps: ["Initialize min and max with the first element.", "Iterate through the rest of the array.", "Compare each element with the current min.", "Compare each element with the current max.", "Update if a smaller min or larger max is found."],
+                code: { pythonCode: `def findMinMax(nums):\n    if not nums:\n        return None, None\n    min_val, max_val = nums[0], nums[0]\n    for num in nums[1:]:\n        if num < min_val:\n            min_val = num\n        elif num > max_val:\n            max_val = num\n    return min_val, max_val`, javaCode: `public int[] findMinMax(int[] nums) {\n    if (nums == null || nums.length == 0) return new int[]{};\n    int minVal = nums[0];\n    int maxVal = nums[0];\n    for (int i = 1; i < nums.length; i++) {\n        if (nums[i] < minVal) minVal = nums[i];\n        if (nums[i] > maxVal) maxVal = nums[i];\n    }\n    return new int[]{minVal, maxVal};\n}`, differences: ["Return Type: Python tuple vs Java array.", "Null/Empty Handling differences."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input); if (arr.length === 0) return [configs.minMax.getInitialState(inputs)];
+                    let localMin = arr[0], localMax = arr[0], localComparisons = 0;
+                    history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: i === 0 ? ['sorted'] : [] })), min: localMin, max: localMax, comparisons: 0, activeStep: 0 });
+                    for (let i = 1; i < arr.length; i++) {
+                        history.push({ ...history[history.length-1], elements: arr.map((val, j) => ({ val, classes: i === j ? ['comparing'] : j < i ? ['sorted'] : [] })), activeStep: 1 });
+                        localComparisons++;
+                        if (arr[i] < localMin) { localMin = arr[i]; }
+                        localComparisons++;
+                        if (arr[i] > localMax) { localMax = arr[i]; }
+                        history.push({ ...history[history.length-1], elements: arr.map((val, j) => ({ val, classes: j <= i ? ['sorted'] : [] })), min: localMin, max: localMax, comparisons: localComparisons, activeStep: 4 });
+                    }
+                    history.push({ ...history[history.length - 1], elements: arr.map(val => ({ val, classes: ['sorted'] })) });
+                    return history;
+                }
+            },
+            sortedAndRotated: {
+                name: 'Sorted & Rotated',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 3,4,5,1,2' } },
+                getInitialState: (inputs = { input: '3,4,5,1,2' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), result: 'Checking...', violations: 0, activeStep: null, }),
+                DisplayComponent: ({ elements, result }) => ( <> {commonDisplay({ elements })} <div className={`text-center font-semibold text-lg p-4 rounded-lg ${result.includes('NOT') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}> {result} </div> </> ),
+                InfoPanelComponent: ({ violations }) => (<div className="grid grid-cols-1 gap-4"><InfoCard title="Violations" value={violations} /></div>),
+                steps: ["Count the number of times nums[i] > nums[i+1].", "This check includes the wrap-around from last to first element.", "If the count of such 'violations' is more than 1, the array is not sorted and rotated.", "A valid array has 0 or 1 violations."],
+                code: { pythonCode: `def check(nums):\n    violations = 0\n    n = len(nums)\n    for i in range(n):\n        if nums[i] > nums[(i + 1) % n]:\n            violations += 1\n    return violations <= 1`, javaCode: `class Solution {\n    public boolean check(int[] nums) {\n        int violations = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            if (nums[i] > nums[(i + 1) % n]) {\n                violations++;\n            }\n        }\n        return violations <= 1;\n    }\n}`, differences: ["Core logic is identical.", "Standard syntax differences."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input);
+                    let violations = 0;
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: [] })), result: 'Checking...', violations: 0, activeStep: 0 });
+                    for (let i = 0; i < arr.length; i++) {
+                        const next_idx = (i + 1) % arr.length;
+                        history.push({ inputs, elements: arr.map((v, j) => ({ val: v, classes: (j === i || j === next_idx) ? ['comparing'] : [] })), result: `Comparing ${arr[i]} and ${arr[next_idx]}`, violations, activeStep: 1 });
+                        if (arr[i] > arr[next_idx]) {
+                            violations++;
+                        }
+                    }
+                    const isValid = violations <= 1;
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: [isValid ? 'sorted' : 'duplicate'] })), result: `Result: Array is ${isValid ? '' : 'NOT '}sorted and rotated.`, violations, activeStep: 3 });
+                    return history;
+                }
+            },
+            sortColors: {
+                name: 'Sort Colors',
+                pattern: 'THREE POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 2,0,2,1,1,0' } },
+                getInitialState: (inputs = { input: '2,0,2,1,1,0' }) => { const arr = parseNumArray(inputs.input); return { inputs, elements: arr.map(val => ({ val, classes: [] })), low: 0, mid: 0, high: arr.length - 1, activeStep: null, }; },
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ low, mid, high }) => ( <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> <InfoCard title="Low Pointer" value={low} /> <InfoCard title="Mid Pointer" value={mid} /> <InfoCard title="High Pointer" value={high} /> </div> ),
+                steps: ["Initialize low and mid at 0, high at the end.", "Iterate with mid pointer as long as mid <= high.", "If mid element is 0, swap with low, increment both low and mid.", "If mid element is 1, just increment mid.", "If mid element is 2, swap with high, decrement high (don't increment mid)."],
+                code: { pythonCode: `def sortColors(nums):\n    low, mid, high = 0, 0, len(nums) - 1\n    while mid <= high:\n        if nums[mid] == 0:\n            nums[low], nums[mid] = nums[mid], nums[low]\n            low += 1\n            mid += 1\n        elif nums[mid] == 1:\n            mid += 1\n        else:\n            nums[high], nums[mid] = nums[mid], nums[high]\n            high -= 1`, javaCode: `public void sortColors(int[] nums) {\n    int low = 0, mid = 0, high = nums.length - 1;\n    while (mid <= high) {\n        switch (nums[mid]) {\n            case 0:\n                swap(nums, low++, mid++);\n                break;\n            case 1:\n                mid++;\n                break;\n            case 2:\n                swap(nums, mid, high--);\n                break;\n        }\n    }\n}`, differences: ["Swapping logic.", "Java version can use a switch statement for clarity."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    let arr = parseNumArray(inputs.input); let l = 0, m = 0, h = arr.length - 1;
+                    const getClasses = (arr, l, m, h, swapping = []) => arr.map((val, i) => ({ val, classes: [ i < l && 'zero', i > h && 'two', i === l && 'left-pointer', i === m && 'mid-pointer', i === h && 'right-pointer', swapping.includes(i) && 'swapping' ].filter(Boolean) }));
+                    history.push({ inputs, elements: getClasses(arr, l, m, h), low: l, mid: m, high: h, activeStep: 0 });
+                    while (m <= h) {
+                        history.push({ inputs, elements: getClasses(arr, l, m, h), low: l, mid: m, high: h, activeStep: 1 });
+                        if (arr[m] === 0) {
+                            history.push({ inputs, elements: getClasses(arr, l, m, h, [l, m]), low: l, mid: m, high: h, activeStep: 2 });
+                            [arr[l], arr[m]] = [arr[m], arr[l]]; l++; m++;
+                        } else if (arr[m] === 1) {
+                            m++;
+                            history.push({ inputs, elements: getClasses(arr, l, m, h), low: l, mid: m, high: h, activeStep: 3 });
+                        } else {
+                            history.push({ inputs, elements: getClasses(arr, l, m, h, [m, h]), low: l, mid: m, high: h, activeStep: 4 });
+                            [arr[m], arr[h]] = [arr[h], arr[m]]; h--;
+                        }
+                    }
+                    history.push({ inputs, elements: arr.map(val => ({ val, classes: ['sorted', val === 0 ? 'zero' : val === 1 ? 'one' : 'two'] })), low: l, mid: m, high: h, activeStep: null });
+                    return history;
+                }
+            },
+            container: {
+                name: 'Container Water',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 1,8,6,2,5,4,8,3,7' } },
+                getInitialState: (inputs = { input: '1,8,6,2,5,4,8,3,7' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), maxArea: 0, currentArea: 0, left: 0, right: parseNumArray(inputs.input).length - 1, activeStep: null, }),
+                DisplayComponent: containerDisplay,
+                InfoPanelComponent: ({ maxArea, currentArea, left, right }) => ( <div className="grid grid-cols-2 md:grid-cols-4 gap-4"> <InfoCard title="Max Area" value={maxArea} /> <InfoCard title="Current Area" value={currentArea} /> <InfoCard title="Left Pointer" value={left} /> <InfoCard title="Right Pointer" value={right} /> </div> ),
+                steps: ["Initialize left and right pointers at ends.", "Calculate area between pointers.", "Update max area if current is larger.", "Move the pointer with the shorter height inward.", "Repeat until pointers meet."],
+                code: { pythonCode: `def maxArea(height):\n    left, right = 0, len(height) - 1\n    max_area = 0\n    while left < right:\n        area = min(height[left], height[right]) * (right - left)\n        max_area = max(max_area, area)\n        if height[left] < height[right]:\n            left += 1\n        else:\n            right -= 1\n    return max_area`, javaCode: `public int maxArea(int[] height) {\n    int maxArea = 0, left = 0, right = height.length - 1;\n    while (left < right) {\n        int area = Math.min(height[left], height[right]) * (right - left);\n        maxArea = Math.max(maxArea, area);\n        if (height[left] < height[right])\n            left++;\n        else\n            right--;\n    }\n    return maxArea;\n}`, differences: ["Math.min/max usage.", "Standard syntax differences."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input); let l = 0, r = arr.length - 1, maxA = 0;
+                    const getClasses = (l, r) => {
+                        const waterHeight = Math.min(arr[l], arr[r]);
+                        return arr.map((val, i) => ({ val, classes: [ (i >= l && i <= r && val < waterHeight) && 'water', (i === l || i === r) && 'border-bar' ].filter(Boolean) }));
+                    };
+                    history.push({ inputs, elements: getClasses(l, r), maxArea: 0, currentArea: 0, left: l, right: r, activeStep: 0 });
+                    while (l < r) {
+                        const currentA = Math.min(arr[l], arr[r]) * (r - l);
+                        if (currentA > maxA) maxA = currentA;
+                        history.push({ inputs, elements: getClasses(l, r), maxArea: maxA, currentArea: currentA, left: l, right: r, activeStep: 2 });
+                        if (arr[l] < arr[r]) l++; else r--;
+                        history.push({ inputs, elements: getClasses(l, r), maxArea: maxA, currentArea: currentA, left: l, right: r, activeStep: 3 });
+                    }
+                    return history;
+                }
+            },
+            maxSum: {
+                name: 'Max Sum K Length',
+                pattern: 'SLIDING WINDOW',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 2,1,5,1,3,2' }, k: { type: 'number', placeholder: 'K' } },
+                getInitialState: (inputs = { input: '2,1,5,1,3,2', k: '3' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), maxSum: 0, currentSum: 0, start: 0, activeStep: null, }),
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ maxSum, currentSum, start }) => ( <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> <InfoCard title="Max Sum" value={maxSum} /> <InfoCard title="Current Sum" value={currentSum} /> <InfoCard title="Window Start" value={start} /> </div> ),
+                steps: ["Sum the first k elements.", "Iterate from k to the end.", "Slide window: add next element, subtract first element of previous window.", "Update max sum at each step.", "Return max sum."],
+                code: { pythonCode: `def maxSum(arr, k):\n    window_sum = sum(arr[:k])\n    max_sum = window_sum\n    for i in range(len(arr) - k):\n        window_sum = window_sum - arr[i] + arr[i + k]\n        max_sum = max(max_sum, window_sum)\n    return max_sum`, javaCode: `public int findMaxSumSubarray(int[] arr, int k) {\n    int maxSum = 0, windowSum = 0;\n    for (int i = 0; i < arr.length; i++) {\n        windowSum += arr[i];\n        if (i >= k) {\n            windowSum -= arr[i - k];\n        }\n        if (i >= k - 1) {\n            maxSum = Math.max(maxSum, windowSum);\n        }\n    }\n    return maxSum;\n}`, differences: ["Looping strategy.", "Initial sum calculation."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input); const k = parseInt(inputs.k); if (k > arr.length) return [configs.maxSum.getInitialState(inputs)];
+                    let maxSum = 0, windowSum = 0, windowStart = 0;
+                    for (let i = 0; i < k; i++) windowSum += arr[i];
+                    maxSum = windowSum;
+                    history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: i < k ? ['window'] : [] })), maxSum, currentSum: windowSum, start: 0, activeStep: 0 });
+                    for (let i = k; i < arr.length; i++) {
+                        windowSum = windowSum - arr[i - k] + arr[i];
+                        if (windowSum > maxSum) maxSum = windowSum;
+                        windowStart = i - k + 1;
+                        history.push({ inputs, elements: arr.map((v, j) => ({ val: v, classes: (j >= windowStart && j <= i) ? ['window'] : [] })), maxSum, currentSum: windowSum, start: windowStart, activeStep: 2 });
+                    }
+                    return history;
+                }
+            },
+            maxOnes: {
+                name: 'Max Consecutive 1s III',
+                pattern: 'SLIDING WINDOW',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 1,1,1,0,0,0,1,1,1,1,0' }, k: { type: 'number', placeholder: 'K flips' } },
+                getInitialState: (inputs = { input: '1,1,1,0,0,0,1,1,1,1,0', k: '2' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), maxLength: 0, left: 0, zeros: 0, activeStep: null, }),
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ maxLength, left, zeros, inputs }) => ( <div className="grid grid-cols-2 md:grid-cols-4 gap-4"> <InfoCard title="Max Length" value={maxLength} /> <InfoCard title="Left Pointer" value={left} /> <InfoCard title="Zeros in Window" value={zeros} /> <InfoCard title="K (Max Flips)" value={inputs.k} /> </div> ),
+                steps: ["Use a sliding window [left, right].", "Expand window by moving right.", "If element is 0, increment zero count.", "If zero count > k, shrink window from left until valid.", "Update max length at each step."],
+                code: { pythonCode: `def longestOnes(nums, k):\n    left = 0\n    for right, num in enumerate(nums):\n        k -= (1 - num)\n        if k < 0:\n            k += (1 - nums[left])\n            left += 1\n    return len(nums) - left`, javaCode: `public int longestOnes(int[] nums, int k) {\n    int left = 0, right;\n    for (right = 0; right < nums.length; right++) {\n        if (nums[right] == 0) k--;\n        if (k < 0 && nums[left++] == 0) k++;\n    }\n    return right - left;\n}`, differences: ["Logic for tracking zeros/k.", "Python version is more concise."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input); const k = parseInt(inputs.k);
+                    let left = 0, zeroCount = 0, maxLen = 0;
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: [] })), maxLength: 0, left: 0, zeros: 0, activeStep: 0 });
+                    for (let right = 0; right < arr.length; right++) {
+                        if (arr[right] === 0) zeroCount++;
+                        while (zeroCount > k) {
+                            if (arr[left] === 0) zeroCount--;
+                            left++;
+                        }
+                        maxLen = Math.max(maxLen, right - left + 1);
+                        history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: [ (i >= left && i <= right) && 'window', (i >= left && i <= right && v === 0) && 'flipped' ].filter(Boolean) })), maxLength: maxLen, left, zeros: zeroCount, activeStep: 4 });
+                    }
+                    return history;
+                }
+            },
+            minSubarray: {
+                name: 'Min Size Subarray Sum',
+                pattern: 'SLIDING WINDOW',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 2,3,1,2,4,3' }, target: { type: 'number', placeholder: 'Target' } },
+                getInitialState: (inputs = { input: '2,3,1,2,4,3', target: '7' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), minLength: Infinity, left: 0, currentSum: 0, activeStep: null, }),
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ minLength, left, currentSum, inputs }) => ( <div className="grid grid-cols-2 md:grid-cols-4 gap-4"> <InfoCard title="Min Length" value={minLength === Infinity ? '∞' : minLength} /> <InfoCard title="Left Pointer" value={left} /> <InfoCard title="Current Sum" value={currentSum} /> <InfoCard title="Target" value={inputs.target} /> </div> ),
+                steps: ["Expand window by adding right element to sum.", "While sum >= target, update min length.", "Shrink window from left and subtract from sum.", "Continue until right pointer reaches end."],
+                code: { pythonCode: `def minSubArrayLen(target, nums):\n    left, total = 0, 0\n    min_len = float('inf')\n    for right, n in enumerate(nums):\n        total += n\n        while total >= target:\n            min_len = min(min_len, right - left + 1)\n            total -= nums[left]\n            left += 1\n    return min_len if min_len != float('inf') else 0`, javaCode: `public int minSubArrayLen(int target, int[] nums) {\n    int left = 0, sum = 0, minLength = Integer.MAX_VALUE;\n    for (int right = 0; right < nums.length; right++) {\n        sum += nums[right];\n        while (sum >= target) {\n            minLength = Math.min(minLength, right - left + 1);\n            sum -= nums[left++];\n        }\n    }\n    return minLength == Integer.MAX_VALUE ? 0 : minLength;\n}`, differences: ["Infinity representation.", "Standard syntax."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const arr = parseNumArray(inputs.input); const target = parseInt(inputs.target);
+                    let left = 0, sum = 0, minLen = Infinity;
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: [] })), minLength: Infinity, left: 0, currentSum: 0, activeStep: null });
+                    for (let right = 0; right < arr.length; right++) {
+                        sum += arr[right];
+                        history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: (i >= left && i <= right) ? ['window'] : [] })), minLength: minLen, left, currentSum: sum, activeStep: 0 });
+                        while (sum >= target) {
+                            minLen = Math.min(minLen, right - left + 1);
+                            history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: (i >= left && i <= right) ? ['window', 'valid'] : [] })), minLength: minLen, left, currentSum: sum, activeStep: 1 });
+                            sum -= arr[left];
+                            left++;
+                        }
+                    }
+                    return history;
+                }
+            },
+            removeDuplicates: {
+                name: 'Remove Duplicates',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 1,1,2,2,3,4,4,5' } },
+                getInitialState: (inputs = { input: '1,1,2,2,3,4,4,5' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), writePtr: 1, readPtr: 1, activeStep: null, }),
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ writePtr, readPtr }) => ( <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> <InfoCard title="Write Pointer (Slow)" value={writePtr} /> <InfoCard title="Read Pointer (Fast)" value={readPtr} /> </div> ),
+                steps: ["Use a write pointer for the next unique element position.", "Use a read pointer to iterate through the array.", "If read element is different from previous, copy to write position and increment write pointer.", "Otherwise, just increment read pointer."],
+                code: { pythonCode: `def removeDuplicates(nums):\n    if not nums: return 0\n    write = 1\n    for read in range(1, len(nums)):\n        if nums[read] != nums[read - 1]:\n            nums[write] = nums[read]\n            write += 1\n    return write`, javaCode: `public int removeDuplicates(int[] nums) {\n    if (nums.length == 0) return 0;\n    int i = 0;\n    for (int j = 1; j < nums.length; j++) {\n        if (nums[j] != nums[i]) {\n            i++;\n            nums[i] = nums[j];\n        }\n    }\n    return i + 1;\n}`, differences: ["Pointer naming/strategy.", "Return value logic."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    let arr = parseNumArray(inputs.input); if (arr.length === 0) return [configs.removeDuplicates.getInitialState(inputs)];
+                    let write = 1;
+                    history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: [i === 0 && 'valid'] })), writePtr: 1, readPtr: 1, activeStep: 0 });
+                    for (let read = 1; read < arr.length; read++) {
+                        history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: [ i < write && 'valid', i === write && 'left-pointer', i === read && 'right-pointer', i >= write && arr[i] === arr[i-1] && 'duplicate' ].filter(Boolean) })), writePtr: write, readPtr: read, activeStep: 1 });
+                        if (arr[read] !== arr[read - 1]) {
+                            arr[write] = arr[read];
+                            write++;
+                        }
+                    }
+                    history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: i < write ? ['valid', 'sorted'] : ['duplicate'] })), writePtr: write, readPtr: arr.length, activeStep: null });
+                    return history;
+                }
+            },
+            moveZeros: {
+                name: 'Move Zeros',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., 0,1,0,3,12' } },
+                getInitialState: (inputs = { input: '0,1,0,3,12' }) => ({ inputs, elements: parseNumArray(inputs.input).map(val => ({ val, classes: [] })), writePtr: 0, activeStep: null, }),
+                DisplayComponent: commonDisplay,
+                InfoPanelComponent: ({ writePtr }) => ( <div className="grid grid-cols-1 md:grid-cols-1 gap-4"> <InfoCard title="Write Pointer (Non-zeros)" value={writePtr} /> </div> ),
+                steps: ["Use a write pointer for the next non-zero position.", "Iterate through the array with a read pointer.", "If read element is non-zero, swap with write pointer element and increment write pointer.", "After loop, all non-zeros are at the front."],
+                code: { pythonCode: `def moveZeroes(nums):\n    write = 0\n    for read in range(len(nums)):\n        if nums[read] != 0:\n            nums[write], nums[read] = nums[read], nums[write]\n            write += 1`, javaCode: `public void moveZeroes(int[] nums) {\n    int write = 0;\n    for (int read = 0; read < nums.length; read++) {\n        if (nums[read] != 0) {\n            int temp = nums[write];\n            nums[write] = nums[read];\n            nums[read] = temp;\n            write++;\n        }\n    }\n}`, differences: ["Swapping logic."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    let arr = parseNumArray(inputs.input); let write = 0;
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: [v === 0 && 'zero'] })), writePtr: 0, activeStep: 0 });
+                    for (let read = 0; read < arr.length; read++) {
+                        history.push({ inputs, elements: arr.map((v, i) => ({ val: v, classes: [ v === 0 && 'zero', i === write && 'left-pointer', i === read && 'right-pointer' ].filter(Boolean) })), writePtr: write, activeStep: 1 });
+                        if (arr[read] !== 0) {
+                            [arr[write], arr[read]] = [arr[read], arr[write]];
+                            write++;
+                        }
+                    }
+                    history.push({ inputs, elements: arr.map(v => ({ val: v, classes: v === 0 ? ['zero'] : ['valid'] })), writePtr: write, activeStep: null });
+                    return history;
+                }
+            },
+            palindrome: {
+                name: 'Valid Palindrome',
+                pattern: 'TWO POINTERS',
+                complexity: { time: 'O(n)', space: 'O(1)' },
+                controls: { input: { type: 'text', placeholder: 'e.g., A man, a plan, a canal: Panama' } },
+                getInitialState: (inputs = { input: 'A man, a plan, a canal: Panama' }) => ({ inputs, elements: parseStr(inputs.input).split('').map(val => ({ val, classes: [] })), result: 'Checking...', activeStep: null, }),
+                DisplayComponent: ({ elements, result }) => ( <> {commonDisplay({ elements })} <div className={`text-center font-semibold text-lg p-4 rounded-lg ${result === 'Yes' ? 'bg-green-100 text-green-800' : result === 'No' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}> Is Palindrome? {result} </div> </> ),
+                InfoPanelComponent: () => null,
+                steps: ["Initialize left and right pointers at ends.", "Skip non-alphanumeric characters from both sides.", "Compare characters (case-insensitive). If mismatch, return false.", "Move pointers inward and repeat."],
+                code: { pythonCode: `def isPalindrome(s):\n    l, r = 0, len(s) - 1\n    while l < r:\n        while l < r and not s[l].isalnum():\n            l += 1\n        while l < r and not s[r].isalnum():\n            r -= 1\n        if s[l].lower() != s[r].lower():\n            return False\n        l, r = l + 1, r - 1\n    return True`, javaCode: `public boolean isPalindrome(String s) {\n    int i = 0, j = s.length() - 1;\n    while (i < j) {\n        while (i < j && !Character.isLetterOrDigit(s.charAt(i))) i++;\n        while (i < j && !Character.isLetterOrDigit(s.charAt(j))) j--;\n        if (Character.toLowerCase(s.charAt(i)) != Character.toLowerCase(s.charAt(j)))\n            return false;\n        i++; j--;\n    }\n    return true;\n}`, differences: ["Character method checks (isalnum vs isLetterOrDigit).", "Case conversion methods."] },
+                generateHistory: (inputs) => {
+                    const history = [];
+                    const s = inputs.input; let l = 0, r = s.length - 1; let isPal = true;
+                    const isAlphanumeric = (char) => /^[a-zA-Z0-9]$/.test(char);
+                    history.push({ inputs, elements: s.split('').map((v, i) => ({ val: v, classes: [ isAlphanumeric(v) ? 'valid' : 'duplicate' ] })), result: 'Checking...', activeStep: 0 });
+                    while (l < r) {
+                        while (l < r && !isAlphanumeric(s[l])) l++;
+                        while (l < r && !isAlphanumeric(s[r])) r--;
+                        history.push({ inputs, elements: s.split('').map((v, i) => ({ val: v, classes: [ i === l && 'left-pointer', i === r && 'right-pointer', isAlphanumeric(v) ? 'valid' : 'duplicate' ].filter(Boolean) })), result: 'Checking...', activeStep: 1 });
+                        if (s[l].toLowerCase() !== s[r].toLowerCase()) { isPal = false; break; }
+                        l++; r--;
+                    }
+                    history.push({ inputs, elements: s.split('').map(v => ({ val: v, classes: ['sorted', isAlphanumeric(v) ? 'valid' : 'duplicate'] })), result: isPal ? 'Yes' : 'No', activeStep: null });
+                    return history;
+                }
+            },
+        };
+
+        // Main App Component
+        const App = () => {
+            const [activeAlgorithm, setActiveAlgorithm] = React.useState('longestSubstring');
+
+            const ActiveAlgorithmConfig = configs[activeAlgorithm];
+
+            const handleAlgorithmChange = (key) => {
+                setActiveAlgorithm(key);
+            };
+
+            return (
+                <div className="bg-gradient-to-br from-gray-50 to-indigo-100 min-h-screen p-4 sm:p-6 lg:p-8 font-sans">
+                    <div className="container mx-auto max-w-7xl bg-white/80 backdrop-blur-sm rounded-2xl p-5 sm:p-8 shadow-2xl shadow-indigo-200/50">
+                        <header className="text-center mb-8">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text mb-2">
+                                🚀 Advanced Algorithm Visualizer
+                            </h1>
+                            <p className="text-gray-500">Two Pointers & Sliding Window Techniques</p>
+                        </header>
+
+                        <div className="flex flex-wrap justify-center gap-2 mb-8">
+                            {Object.keys(configs).map(key => (
+                                <button
+                                    key={key}
+                                    onClick={() => handleAlgorithmChange(key)}
+                                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 transform hover:scale-105 ${activeAlgorithm === key ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg' : 'bg-white text-gray-700 hover:bg-indigo-100 shadow-sm'}`}
+                                >
+                                    {configs[key].name}
+                                </button>
+                            ))}
+                        </div>
+
+                        <main className="bg-white p-4 sm:p-6 rounded-xl shadow-inner shadow-gray-200/50">
+                            <style>{`
+                                .element { border: 2px solid #ddd; }
+                                .left-pointer { border-color: #ff6b6b; border-width: 3px; box-shadow: 0 0 15px rgba(255, 107, 107, 0.5); transform: translateY(-5px); }
+                                .mid-pointer { border-color: #4facfe; border-width: 3px; box-shadow: 0 0 15px rgba(79, 172, 254, 0.5); transform: scale(1.1); }
+                                .right-pointer { border-color: #51cf66; border-width: 3px; box-shadow: 0 0 15px rgba(81, 207, 102, 0.5); transform: translateY(-5px); }
+                                .comparing { background: linear-gradient(45deg, #4facfe, #00f2fe); color: white; border-color: #4facfe; transform: scale(1.1); }
+                                .swapping { background: linear-gradient(45deg, #ff6b6b, #ffa8a8); color: white; border-color: #ff6b6b; animation: shake 0.5s; }
+                                .sorted { background: linear-gradient(45deg, #51cf66, #8ce99a); color: white; border-color: #51cf66; }
+                                .window { background: linear-gradient(45deg, #9775fa, #d0bfff); color: white; border-color: #9775fa; }
+                                .zero { background: linear-gradient(45deg, #868e96, #adb5bd); color: white; border-color: #868e96; }
+                                .one { background: linear-gradient(45deg, #51cf66, #8ce99a); color: white; border-color: #51cf66; }
+                                .two { background: linear-gradient(45deg, #ff8787, #ffc9c9); color: white; border-color: #ff8787; }
+                                .duplicate { background: linear-gradient(45deg, #ff8787, #ffc9c9); color: white; border-color: #ff8787; }
+                                .valid { background: linear-gradient(45deg, #20c997, #51cf66); color: white; border-color: #20c997; }
+                                .flipped { background: linear-gradient(45deg, #ffd43b, #fab005); color: white; border-color: #ffd43b; }
+                                .border-bar { background: linear-gradient(45deg, #667eea, #764ba2); }
+                                .water { background: linear-gradient(45deg, #4facfe, #00f2fe); opacity: 0.7; }
+                                @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+                            `}</style>
+                            {ActiveAlgorithmConfig && <AlgorithmComponent 
+                                key={activeAlgorithm}
+                                config={ActiveAlgorithmConfig}
+                            />}
+                        </main>
+                    </div>
+                </div>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+
+    </script>
+</body>
+</html>

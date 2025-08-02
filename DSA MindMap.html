@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete DS&A Memory Guide</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        
+        .nav-tab:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .algo-card {
+            background: #f8f9fa;
+            border-left: 5px solid;
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .algo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        /* Data Structure Colors */
+        .array { border-left-color: #e74c3c; }
+        .linkedlist { border-left-color: #3498db; }
+        .stack { border-left-color: #f39c12; }
+        .queue { border-left-color: #27ae60; }
+        .tree { border-left-color: #8e44ad; }
+        .bst { border-left-color: #9b59b6; }
+        .graph { border-left-color: #34495e; }
+        
+        /* Sorting Colors */
+        .bubble { border-left-color: #ff6b6b; }
+        .selection { border-left-color: #4ecdc4; }
+        .insertion { border-left-color: #45b7d1; }
+        .merge { border-left-color: #96ceb4; }
+        .quick { border-left-color: #feca57; }
+        .heap { border-left-color: #ff9ff3; }
+        
+        /* Search Colors */
+        .linear { border-left-color: #fd79a8; }
+        .binary { border-left-color: #00b894; }
+        .dfs { border-left-color: #6c5ce7; }
+        .bfs { border-left-color: #a29bfe; }
+        .dijkstra { border-left-color: #fd63a3; }
+        
+        .algo-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .algo-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .complexity {
+            background: #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: #2d3748;
+        }
+        
+        .memory-trick {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .visual-demo {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
+        
+        .step {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .comparison-table {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .mnemonic-box {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #4169e1;
+        }
+        
+        .tree-visual {
+            font-family: monospace;
+            text-align: center;
+            line-height: 1.8;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .graph-visual {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .node {
+            width: 40px;
+            height: 40px;
+            background: #4169e1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .node.visited {
+            background: #28a745;
+        }
+        
+        .node.current {
+            background: #dc3545;
+            transform: scale(1.2);
+        }
+        
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .operation {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .operation-name {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .operation-complexity {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .master-mnemonic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        
+        .section-intro {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2196f3;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .algo-title {
+                font-size: 1.5em;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Complete Memory Guide: Data Structures & Algorithms</h1>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('data-structures')">📊 Data Structures</button>
+            <button class="nav-tab" onclick="showSection('sorting')">🔄 Sorting</button>
+            <button class="nav-tab" onclick="showSection('searching')">🔍 Searching</button>
+            <button class="nav-tab" onclick="showSection('graph-traversal')">🕸️ Graph Traversal</button>
+            <button class="nav-tab" onclick="showSection('master-guide')">🎯 Master Guide</button>
+        </div>
+
+        <!-- DATA STRUCTURES SECTION -->
+        <div id="data-structures" class="section active">
+            <div class="section-intro">
+                <h2>📊 Data Structures - The Building Blocks</h2>
+                <p>Think of data structures as different types of containers for organizing information. Each has its own strengths and use cases!</p>
+            </div>
+
+            <div class="algo-card array">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">📚</span>Array</div>
+                    <div class="complexity">Access: O(1)</div>
+                    <div class="complexity">Search: O(n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>bookshelf with numbered slots</strong>. You can instantly grab book #5, but to find "Harry Potter" you need to check each slot.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Bookshelf with numbered slots! 📚</strong><br>
+                    <div class="step">Index:  [0] [1] [2] [3] [4]</div>
+                    <div class="step">Values: [A] [B] [C] [D] [E]</div>
+                    <div class="step">Access arr[2] = C instantly! But searching for "D" requires checking each slot.</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Access</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Insert</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Delete</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Random access, mathematical operations, when size is known</p>
+            </div>
+
+            <div class="algo-card linkedlist">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🔗</span>Linked List</div>
+                    <div class="complexity">Access: O(n)</div>
+                    <div class="complexity">Insert: O(1)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>treasure hunt with clues</strong>. Each clue (node) tells you where the next treasure is. You can't jump to clue #5 directly - you must follow the chain!
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Treasure hunt chain! 🗺️</strong><br>
+                    <div class="step">[A]→[B]→[C]→[D]→[E]→NULL</div>
+                    <div class="step">To reach D: Start at A, follow arrows: A→B→C→D</div>
+                    <div class="step">Insert new node: Just change arrows! No shifting needed.</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Access</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Insert</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Delete</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Dynamic size, frequent insertions/deletions</p>
+            </div>
+
+            <div class="algo-card stack">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🥞</span>Stack</div>
+                    <div class="complexity">Push/Pop: O(1)</div>
+                    <div class="complexity">LIFO</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>stack of pancakes</strong>. You can only add (push) or remove (pop) from the top. "Last In, First Out" - the last pancake you put on is the first one you eat!
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Stack of pancakes! 🥞</strong><br>
+                    <div class="step">Push 1: [1]</div>
+                    <div class="step">Push 2: [1,2] ← top</div>
+                    <div class="step">Push 3: [1,2,3] ← top</div>
+                    <div class="step">Pop: [1,2] (removed 3)</div>
+                    <div class="step">Pop: [1] (removed 2)</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Push</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Pop</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Peek/Top</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Function calls, undo operations, expression evaluation</p>
+            </div>
+
+            <div class="algo-card queue">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🚶‍♂️</span>Queue</div>
+                    <div class="complexity">Enqueue/Dequeue: O(1)</div>
+                    <div class="complexity">FIFO</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>line at a coffee shop</strong>. First person in line is first to get coffee. You join (enqueue) at the back and leave (dequeue) from the front. "First In, First Out"!
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Coffee shop line! ☕</strong><br>
+                    <div class="step">Enqueue A: [A] ← back | front</div>
+                    <div class="step">Enqueue B: [A,B] ← back | front</div>
+                    <div class="step">Enqueue C: [A,B,C] ← back | front</div>
+                    <div class="step">Dequeue: [B,C] (A got coffee!)</div>
+                    <div class="step">Dequeue: [C] (B got coffee!)</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Enqueue</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Dequeue</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Front</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Scheduling, breadth-first search, handling requests</p>
+            </div>
+
+            <div class="algo-card tree">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🌳</span>Tree</div>
+                    <div class="complexity">Varies by type</div>
+                    <div class="complexity">Hierarchical</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>family tree</strong>. There's one ancestor (root) at the top, and each person can have children. No cycles - you can't be your own grandparent!
+                </div>
+                
+                <div class="tree-visual">
+                    <strong>Visual: Family tree! 👨‍👩‍👧‍👦</strong><br>
+                    <div class="step">       A (root)</div>
+                    <div class="step">      / \</div>
+                    <div class="step">     B   C</div>
+                    <div class="step">    / \   \</div>
+                    <div class="step">   D   E   F</div>
+                    <div class="step">Parent-child relationships, no cycles!</div>
+                </div>
+                
+                <p><strong>Key Terms:</strong> Root (top), Leaf (no children), Height (longest path), Level (distance from root)</p>
+                <p><strong>Best For:</strong> Hierarchical data, file systems, organization charts</p>
+            </div>
+
+            <div class="algo-card bst">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🔍</span>Binary Search Tree</div>
+                    <div class="complexity">Average: O(log n)</div>
+                    <div class="complexity">Worst: O(n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>"phone book tree"</strong>. Names to the left are alphabetically smaller, names to the right are larger. To find "Smith", you'd go right from "Johnson" but left from "Wilson".
+                </div>
+                
+                <div class="tree-visual">
+                    <strong>Visual: Phone book tree! 📞</strong><br>
+                    <div class="step">       50</div>
+                    <div class="step">      /  \</div>
+                    <div class="step">    30    70</div>
+                    <div class="step">   / \   / \</div>
+                    <div class="step">  20 40 60 80</div>
+                    <div class="step">Left < Parent < Right</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(log n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Insert</div>
+                        <div class="operation-complexity">O(log n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Delete</div>
+                        <div class="operation-complexity">O(log n)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Traversal</div>
+                        <div class="operation-complexity">O(n)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Sorted data, fast search/insert/delete, range queries</p>
+            </div>
+
+            <div class="algo-card graph">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🕸️</span>Graph</div>
+                    <div class="complexity">Depends on representation</div>
+                    <div class="complexity">Vertices & Edges</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>social network</strong>. People are vertices (nodes), friendships are edges (connections). Unlike trees, you can have cycles - A knows B, B knows C, C knows A!
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Social network! 👥</strong><br>
+                    <div class="step">Vertices: [A, B, C, D]</div>
+                    <div class="step">Edges: A-B, B-C, C-D, D-A, A-C</div>
+                    <div class="step">   A --- B</div>
+                    <div class="step">   |\   /|</div>
+                    <div class="step">   | \ / |</div>
+                    <div class="step">   |  X  |</div>
+                    <div class="step">   | / \ |</div>
+                    <div class="step">   D --- C</div>
+                </div>
+                
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">Add Vertex</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Add Edge</div>
+                        <div class="operation-complexity">O(1)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Search</div>
+                        <div class="operation-complexity">O(V+E)</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">Traversal</div>
+                        <div class="operation-complexity">O(V+E)</div>
+                    </div>
+                </div>
+                
+                <p><strong>Best For:</strong> Social networks, maps, dependencies, web pages</p>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>📝 Data Structures Mnemonic</h3>
+                <p><strong>"Amazing Linked Stack Queues Trees Build Smart Graphs"</strong></p>
+                <ul>
+                    <li><strong>A</strong>rray - Bookshelf with numbered slots</li>
+                    <li><strong>L</strong>inked List - Treasure hunt chain</li>
+                    <li><strong>S</strong>tack - Pancake stack (LIFO)</li>
+                    <li><strong>Q</strong>ueue - Coffee shop line (FIFO)</li>
+                    <li><strong>T</strong>ree - Family tree (hierarchical)</li>
+                    <li><strong>B</strong>ST - Phone book tree (sorted)</li>
+                    <li><strong>G</strong>raph - Social network (connections)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SORTING SECTION -->
+        <div id="sorting" class="section">
+            <div class="section-intro">
+                <h2>🔄 Sorting Algorithms - Organizing Data</h2>
+                <p>Sorting is like organizing your room - different methods work better for different situations!</p>
+            </div>
+
+            <div class="algo-card bubble">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🫧</span>Bubble Sort</div>
+                    <div class="complexity">O(n²)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>bubbles rising to the surface</strong> - larger elements "bubble up" to the end like air bubbles in water. Each pass, the largest unsorted element bubbles to its correct position.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Like bubbles in soda! 🥤</strong><br>
+                    <div class="step">Pass 1: [<span class="highlight">5,2</span>,8,1,9] → [2,<span class="highlight">5,8</span>,1,9] → [2,5,<span class="highlight">8,1</span>,9] → [2,5,1,<span class="highlight">8,9</span>]</div>
+                    <div class="step">Pass 2: [<span class="highlight">2,5</span>,1,8,9] → [2,<span class="highlight">5,1</span>,8,9] → [2,1,5,8,9]</div>
+                    <div class="step">Each pass: biggest element "bubbles" to the right!</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Adjacent swaps, largest element reaches end each pass</p>
+            </div>
+
+            <div class="algo-card selection">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">👆</span>Selection Sort</div>
+                    <div class="complexity">O(n²)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> You're <strong>selecting the best candidate</strong> for each position. Like picking the shortest person first, then the next shortest, etc. You "select" the minimum each time.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Like organizing your closet! 👕</strong><br>
+                    <div class="step">Find minimum: [<span class="highlight">5,2,8,1,9</span>] → 1 is smallest</div>
+                    <div class="step">Swap with first: [<span class="highlight">1</span>,2,8,5,9] → first position done!</div>
+                    <div class="step">Find next min: [1,<span class="highlight">2,8,5,9</span>] → 2 is smallest</div>
+                    <div class="step">Already in place: [1,<span class="highlight">2</span>,8,5,9]</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Find minimum, swap with current position, repeat</p>
+            </div>
+
+            <div class="algo-card insertion">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🃏</span>Insertion Sort</div>
+                    <div class="complexity">O(n²)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Like <strong>sorting playing cards in your hand</strong>. You pick up one card at a time and insert it in the correct position among the cards you've already sorted.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Sorting cards in your hand! 🎴</strong><br>
+                    <div class="step">Sorted: [5] | Unsorted: [2,8,1,9]</div>
+                    <div class="step">Take 2: [<span class="highlight">5</span>] ← 2 | Insert before 5: [2,5]</div>
+                    <div class="step">Take 8: [2,5] ← <span class="highlight">8</span> | Insert after 5: [2,5,8]</div>
+                    <div class="step">Take 1: [<span class="highlight">2,5,8</span>] ← 1 | Insert at start: [1,2,5,8]</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Build sorted portion one element at a time by inserting</p>
+            </div>
+
+            <div class="algo-card merge">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🔀</span>Merge Sort</div>
+                    <div class="complexity">O(n log n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> <strong>"Divide and Conquer"</strong> - like organizing a messy room by first dividing it into smaller sections, cleaning each section, then combining them back together. Think of merging two sorted piles of papers.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Like merging two sorted stacks! 📚</strong><br>
+                    <div class="step">Split: [5,2,8,1] → [5,2] & [8,1]</div>
+                    <div class="step">Split more: [5,2] → [5] & [2] | [8,1] → [8] & [1]</div>
+                    <div class="step">Merge: [5] & [2] → [2,5] | [8] & [1] → [1,8]</div>
+                    <div class="step">Final merge: [2,5] & [1,8] → [1,2,5,8]</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Recursively divide, then merge sorted halves</p>
+            </div>
+
+            <div class="algo-card quick">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">⚡</span>Quick Sort</div>
+                    <div class="complexity">O(n log n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> <strong>"Pivot and Partition"</strong> - like being a referee in a game. You pick a "pivot" player and separate everyone smaller to the left and larger to the right. Then recursively referee each side.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Like organizing a basketball team by height! 🏀</strong><br>
+                    <div class="step">Pick pivot: [5,2,8,1,9] → pivot = 5</div>
+                    <div class="step">Partition: smaller than 5 | 5 | larger than 5</div>
+                    <div class="step">Result: [2,1] | [5] | [8,9]</div>
+                    <div class="step">Recursively sort: [1,2] | [5] | [8,9] → [1,2,5,8,9]</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Choose pivot, partition around it, recursively sort parts</p>
+            </div>
+
+            <div class="algo-card heap">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🏔️</span>Heap Sort</div>
+                    <div class="complexity">O(n log n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of a <strong>"mountain/heap of rocks"</strong> where the biggest rock is always at the top. You keep removing the biggest rock (top) and the heap reorganizes itself to maintain the mountain shape.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Like a heap of rocks! 🏔️</strong><br>
+                    <div class="step">Build heap: [5,2,8,1,9] → Max heap with 9 at top</div>
+                    <div class="step">      9</div>
+                    <div class="step">     / \</div>
+                    <div class="step">    5   8</div>
+                    <div class="step">   / \</div>
+                    <div class="step">  1   2</div>
+                    <div class="step">Remove 9, rebuild heap, repeat!</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Build max heap, repeatedly extract maximum</p>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>📝 Sorting Mnemonic</h3>
+                <p><strong>"Big Smart Igloos Make Quick Homes"</strong></p>
+                <ul>
+                    <li><strong>B</strong>ubble - Bubbles rise (O(n²))</li>
+                    <li><strong>S</strong>election - Select the best (O(n²))</li>
+                    <li><strong>I</strong>nsertion - Insert like cards (O(n²))</li>
+                    <li><strong>M</strong>erge - Merge two sorted lists (O(n log n))</li>
+                    <li><strong>Q</strong>uick - Quick pivot and partition (O(n log n))</li>
+                    <li><strong>H</strong>eap - Heap of rocks (O(n log n))</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SEARCHING SECTION -->
+        <div id="searching" class="section">
+            <div class="section-intro">
+                <h2>🔍 Search Algorithms - Finding What You Need</h2>
+                <p>Searching is like finding a book in a library - different strategies work better depending on how the books are organized!</p>
+            </div>
+
+            <div class="algo-card linear">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🔎</span>Linear Search</div>
+                    <div class="complexity">O(n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>looking for your keys</strong> by checking every pocket one by one. You start from the first pocket and check each one until you find the keys (or run out of pockets).
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Searching through pockets! 👔</strong><br>
+                    <div class="step">Looking for 7: [3,1,4,1,5,9,2,6,5,3,5,8,9,7]</div>
+                    <div class="step">Check: 3? No. 1? No. 4? No. 1? No. 5? No...</div>
+                    <div class="step">Finally: 7? Yes! Found at index 13</div>
+                    <div class="step">Worst case: Check every element</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Check each element sequentially until found or end reached</p>
+                <p><strong>Best For:</strong> Unsorted data, small datasets, simple implementation</p>
+            </div>
+
+            <div class="algo-card binary">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🎯</span>Binary Search</div>
+                    <div class="complexity">O(log n)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>guessing a number game</strong>. If someone thinks of a number 1-100, you'd guess 50. If they say "higher", you'd guess 75. If "lower", you'd guess 25. You keep halving the search space!
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Number guessing game! 🎲</strong><br>
+                    <div class="step">Sorted array: [1,2,3,4,5,6,7,8,9] | Looking for 7</div>
+                    <div class="step">Check middle: arr[4] = 5 | 7 > 5, search right half</div>
+                    <div class="step">Right half: [6,7,8,9] | Check middle: 7 | Found!</div>
+                    <div class="step">Only 2 comparisons instead of 7!</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Divide search space in half each time by comparing with middle element</p>
+                <p><strong>Best For:</strong> Sorted data, large datasets, when O(log n) is crucial</p>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>📝 Search Mnemonic</h3>
+                <p><strong>"Linear Looks, Binary Bisects"</strong></p>
+                <ul>
+                    <li><strong>L</strong>inear - Look through every pocket (O(n))</li>
+                    <li><strong>B</strong>inary - Bisect the search space (O(log n))</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- GRAPH TRAVERSAL SECTION -->
+        <div id="graph-traversal" class="section">
+            <div class="section-intro">
+                <h2>🕸️ Graph Traversal - Exploring Networks</h2>
+                <p>Graph traversal is like exploring a maze or social network - different strategies help you visit all nodes efficiently!</p>
+            </div>
+
+            <div class="algo-card dfs">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🏃‍♂️</span>Depth-First Search (DFS)</div>
+                    <div class="complexity">O(V + E)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>exploring a cave system</strong>. You go as deep as possible down one path before backtracking. Like following a maze by always taking the first unexplored path and going as far as possible.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Cave exploration! 🕳️</strong><br>
+                    <div class="step">Graph: A connects to B,C | B connects to D,E | C connects to F</div>
+                    <div class="step">Start at A → Visit B → Visit D (dead end) → Back to B</div>
+                    <div class="step">Visit E (dead end) → Back to A → Visit C → Visit F</div>
+                    <div class="step">Order: A → B → D → E → C → F</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Go deep first, use stack (recursion), backtrack when stuck</p>
+                <p><strong>Best For:</strong> Finding paths, detecting cycles, topological sorting</p>
+            </div>
+
+            <div class="algo-card bfs">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🌊</span>Breadth-First Search (BFS)</div>
+                    <div class="complexity">O(V + E)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>ripples in a pond</strong>. When you drop a stone, ripples spread outward layer by layer. BFS explores nodes level by level, like ripples expanding from the starting point.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: Ripples in a pond! 🌊</strong><br>
+                    <div class="step">Graph: A connects to B,C | B connects to D,E | C connects to F</div>
+                    <div class="step">Level 1: Start at A</div>
+                    <div class="step">Level 2: Visit A's neighbors B,C</div>
+                    <div class="step">Level 3: Visit B's neighbors D,E and C's neighbor F</div>
+                    <div class="step">Order: A → B → C → D → E → F</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Explore level by level, use queue, find shortest path</p>
+                <p><strong>Best For:</strong> Shortest path, level-order traversal, minimum spanning tree</p>
+            </div>
+
+            <div class="algo-card dijkstra">
+                <div class="algo-header">
+                    <div class="algo-title"><span class="emoji">🗺️</span>Dijkstra's Algorithm</div>
+                    <div class="complexity">O((V + E) log V)</div>
+                </div>
+                
+                <div class="memory-trick">
+                    <strong>🧠 Memory Trick:</strong> Think of <strong>finding the cheapest route</strong> using GPS. You always choose the shortest known path to an unvisited location, then update distances to its neighbors. Like a GPS recalculating when it finds a shorter route.
+                </div>
+                
+                <div class="visual-demo">
+                    <strong>Visual: GPS navigation! 🧭</strong><br>
+                    <div class="step">Weighted graph: A-(5)-B-(3)-C | A-(10)-C | B-(2)-D</div>
+                    <div class="step">Start at A: Distance to A=0, others=∞</div>
+                    <div class="step">Visit A: Update B=5, C=10</div>
+                    <div class="step">Visit B: Update C=8 (5+3 < 10), D=7 (5+2)</div>
+                    <div class="step">Visit C: No updates needed</div>
+                    <div class="step">Visit D: Shortest paths found!</div>
+                </div>
+                
+                <p><strong>Key Pattern:</strong> Always visit closest unvisited node, update distances, use priority queue</p>
+                <p><strong>Best For:</strong> Shortest path with weights, GPS navigation, network routing</p>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>📝 Graph Traversal Mnemonic</h3>
+                <p><strong>"Deep Broad Dijkstra"</strong></p>
+                <ul>
+                    <li><strong>D</strong>FS - Deep cave exploration (stack/recursion)</li>
+                    <li><strong>B</strong>FS - Broad ripples in pond (queue)</li>
+                    <li><strong>D</strong>ijkstra - Dijkstra's GPS navigation (priority queue)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MASTER GUIDE SECTION -->
+        <div id="master-guide" class="section">
+            <div class="master-mnemonic">
+                <h2>🎯 Master Memory System</h2>
+                <p><strong>The Ultimate Mnemonic:</strong></p>
+                <h3>"Amazing Linked Stack Queues Trees Build Smart Graphs, Big Smart Igloos Make Quick Homes, Linear Looks Binary Bisects, Deep Broad Dijkstra"</h3>
+            </div>
+
+            <div class="comparison-table">
+                <h3>🏆 Complete Complexity Cheat Sheet</h3>
+                <table>
+                    <tr>
+                        <th>Category</th>
+                        <th>Algorithm/Structure</th>
+                        <th>Best Case</th>
+                        <th>Average Case</th>
+                        <th>Worst Case</th>
+                        <th>Space</th>
+                        <th>Memory Trick</th>
+                    </tr>
+                    <tr>
+                        <td rowspan="7">Data Structures</td>
+                        <td>Array Access</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(n)</td>
+                        <td>Bookshelf slots</td>
+                    </tr>
+                    <tr>
+                        <td>Linked List Access</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>Treasure hunt</td>
+                    </tr>
+                    <tr>
+                        <td>Stack Operations</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(n)</td>
+                        <td>Pancake stack</td>
+                    </tr>
+                    <tr>
+                        <td>Queue Operations</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(n)</td>
+                        <td>Coffee line</td>
+                    </tr>
+                    <tr>
+                        <td>BST Operations</td>
+                        <td>O(log n)</td>
+                        <td>O(log n)</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>Phone book tree</td>
+                    </tr>
+                    <tr>
+                        <td>Hash Table</td>
+                        <td>O(1)</td>
+                        <td>O(1)</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>Dictionary lookup</td>
+                    </tr>
+                    <tr>
+                        <td>Graph Traversal</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V)</td>
+                        <td>Social network</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="6">Sorting</td>
+                        <td>Bubble Sort</td>
+                        <td>O(n)</td>
+                        <td>O(n²)</td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>Bubbles rise</td>
+                    </tr>
+                    <tr>
+                        <td>Selection Sort</td>
+                        <td>O(n²)</td>
+                        <td>O(n²)</td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>Select best</td>
+                    </tr>
+                    <tr>
+                        <td>Insertion Sort</td>
+                        <td>O(n)</td>
+                        <td>O(n²)</td>
+                        <td>O(n²)</td>
+                        <td>O(1)</td>
+                        <td>Card sorting</td>
+                    </tr>
+                    <tr>
+                        <td>Merge Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n)</td>
+                        <td>Divide & conquer</td>
+                    </tr>
+                    <tr>
+                        <td>Quick Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n²)</td>
+                        <td>O(log n)</td>
+                        <td>Pivot & partition</td>
+                    </tr>
+                    <tr>
+                        <td>Heap Sort</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(n log n)</td>
+                        <td>O(1)</td>
+                        <td>Rock mountain</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">Searching</td>
+                        <td>Linear Search</td>
+                        <td>O(1)</td>
+                        <td>O(n)</td>
+                        <td>O(n)</td>
+                        <td>O(1)</td>
+                        <td>Pocket search</td>
+                    </tr>
+                    <tr>
+                        <td>Binary Search</td>
+                        <td>O(1)</td>
+                        <td>O(log n)</td>
+                        <td>O(log n)</td>
+                        <td>O(1)</td>
+                        <td>Number guessing</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3">Graph Traversal</td>
+                        <td>DFS</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V)</td>
+                        <td>Cave exploration</td>
+                    </tr>
+                    <tr>
+                        <td>BFS</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V+E)</td>
+                        <td>O(V)</td>
+                        <td>Pond ripples</td>
+                    </tr>
+                    <tr>
+                        <td>Dijkstra</td>
+                        <td>O(V² or (V+E)log V)</td>
+                        <td>O(V² or (V+E)log V)</td>
+                        <td>O(V² or (V+E)log V)</td>
+                        <td>O(V)</td>
+                        <td>GPS navigation</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>🧠 Memory Palace Technique</h3>
+                <p><strong>Create a story:</strong> "In an Amazing bookshelf library, a Linked treasure hunter uses a Stack of pancakes to Queue for coffee. Under the Trees, he Builds a Smart Graph of connections. The Big Smart Igloos Make Quick Homes where Linear detectives Look while Binary experts Bisect. Deep cave explorers and Broad pond watchers help Dijkstra navigate."</p>
+            </div>
+
+            <div class="mnemonic-box">
+                <h3>⚡ Quick Recognition Patterns</h3>
+                <div class="operations">
+                    <div class="operation">
+                        <div class="operation-name">O(1) - Instant</div>
+                        <div class="operation-complexity">Array access, Stack/Queue ops, Hash lookup</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">O(log n) - Halving</div>
+                        <div class="operation-complexity">Binary search, BST ops, Heap ops</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">O(n) - Linear</div>
+                        <div class="operation-complexity">Linear search, Array traversal</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">O(n log n) - Efficient</div>
+                        <div class="operation-complexity">Merge sort, Quick sort, Heap sort</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">O(n²) - Nested</div>
+                        <div class="operation-complexity">Bubble, Selection, Insertion sort</div>
+                    </div>
+                    <div class="operation">
+                        <div class="operation-name">O(V+E) - Graph</div>
+                        <div class="operation-complexity">DFS, BFS, Graph traversal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="memory-trick" style="margin-top: 30px;">
+                <h3>🔥 Pro Memory Tips</h3>
+                <p><strong>1. The Big-O Ladder:</strong> O(1) < O(log n) < O(n) < O(n log n) < O(n²) < O(2ⁿ)</p>
+                <p><strong>2. Space vs Time:</strong> Merge sort trades space for guaranteed O(n log n), Quick sort trades worst-case for average performance</p>
+                <p><strong>3. Data Structure Choice:</strong> Need random access? Array. Need insertion/deletion? Linked List. Need ordering? BST. Need relationships? Graph.</p>
+                <p><strong>4. Algorithm Choice:</strong> Small data? Simple sorts. Large data? Efficient sorts. Sorted data? Binary search. Weighted paths? Dijkstra.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

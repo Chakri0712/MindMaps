@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Core Concepts - Visual Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            cursor: pointer;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .diagram {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 120px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: scale(1.05);
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .bean-lifecycle {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .lifecycle-step {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .lifecycle-step:hover {
+            transform: translateY(-5px);
+        }
+
+        .lifecycle-step::before {
+            content: attr(data-order);
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background: #FF5722;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: #ffd700;
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 5px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+
+        .layer {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 80%;
+            text-align: center;
+            font-weight: 600;
+            border-left: 5px solid #667eea;
+        }
+
+        .interactive-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .interactive-btn:hover {
+            background: #5a67d8;
+        }
+
+        .explanation {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .entity-diagram {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .entity-box {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .entity-title {
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            margin: -15px -15px 10px -15px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+        }
+
+        .orm-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .orm-layer {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hibernate-lifecycle {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .hibernate-state {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #e91e63;
+            transition: transform 0.3s ease;
+        }
+
+        .hibernate-state:hover {
+            transform: translateX(10px);
+        }
+
+        .jpa-annotations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .annotation-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .annotation-card:hover {
+            transform: scale(1.05);
+        }
+
+        .sql-visual {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .sql-visual::before {
+            content: "Generated SQL";
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #4CAF50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Spring Boot Core Concepts</h1>
+            <p>Visual Learning Guide - From Ground Up</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+            <button class="tab-btn" onclick="showTab('startup')">Application Startup</button>
+            <button class="tab-btn" onclick="showTab('lifecycle')">Bean Lifecycle</button>
+            <button class="tab-btn" onclick="showTab('architecture')">Core Architecture</button>
+            <button class="tab-btn" onclick="showTab('orm-jpa')">ORM & JPA</button>
+            <button class="tab-btn" onclick="showTab('hibernate')">Hibernate Deep Dive</button>
+            <button class="tab-btn" onclick="showTab('advanced')">Advanced Concepts</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section active">
+            <h2 class="section-title">🎯 What is Spring Boot?</h2>
+            
+            <div class="info-box">
+                <strong>Spring Boot</strong> is a framework that simplifies Spring application development by providing:
+                <ul style="margin-top: 10px;">
+                    <li>Auto-configuration</li>
+                    <li>Embedded servers</li>
+                    <li>Production-ready features</li>
+                    <li>Dependency management</li>
+                </ul>
+            </div>
+
+            <div class="diagram">
+                <h3>Core Components</h3>
+                <div class="flow-container">
+                    <div class="flow-step">Spring Core<br><small>IoC Container</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">Auto Config<br><small>Smart Defaults</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">Starter POMs<br><small>Dependencies</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">Embedded Server<br><small>Tomcat/Jetty</small></div>
+                </div>
+            </div>
+
+            <div class="code-block">
+@SpringBootApplication
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+            </div>
+
+            <div class="explanation">
+                <strong>@SpringBootApplication</strong> is a convenience annotation that combines:
+                <br>• <span class="highlight">@Configuration</span> - Marks class as configuration source
+                <br>• <span class="highlight">@EnableAutoConfiguration</span> - Enables auto-configuration
+                <br>• <span class="highlight">@ComponentScan</span> - Scans for components
+            </div>
+        </div>
+
+        <!-- Application Startup Section -->
+        <div id="startup" class="content-section">
+            <h2 class="section-title">🚀 Application Startup Process</h2>
+            
+            <div class="diagram">
+                <h3>Step-by-Step Startup Flow</h3>
+                <div class="flow-container" style="flex-direction: column; align-items: stretch;">
+                    <div class="flow-step" style="width: 100%;">1. SpringApplication.run() Called</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">2. Environment Preparation</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">3. ApplicationContext Creation</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">4. Auto-Configuration Processing</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">5. Bean Creation & Injection</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">6. Embedded Server Start</div>
+                    <div class="arrow" style="transform: rotate(90deg); align-self: center;">→</div>
+                    <div class="flow-step" style="width: 100%;">7. Application Ready</div>
+                </div>
+            </div>
+
+            <button class="interactive-btn" onclick="animateStartup()">🎬 Animate Startup Process</button>
+
+            <div id="startup-details" class="explanation">
+                <h4>Detailed Breakdown:</h4>
+                <div id="step-detail">Click "Animate Startup Process" to see detailed explanations of each step!</div>
+            </div>
+
+            <div class="code-block">
+// What happens internally
+SpringApplication app = new SpringApplication(MyApplication.class);
+app.setWebApplicationType(WebApplicationType.SERVLET);
+ConfigurableApplicationContext context = app.run(args);
+
+// Key listeners during startup:
+// 1. ApplicationStartingEvent
+// 2. ApplicationEnvironmentPreparedEvent  
+// 3. ApplicationContextInitializedEvent
+// 4. ApplicationPreparedEvent
+// 5. ApplicationStartedEvent
+// 6. ApplicationReadyEvent
+            </div>
+        </div>
+
+        <!-- Bean Lifecycle Section -->
+        <div id="lifecycle" class="content-section">
+            <h2 class="section-title">🌱 Bean Lifecycle</h2>
+            
+            <div class="info-box">
+                Understanding the bean lifecycle is crucial for managing resources, initialization, and cleanup in Spring applications.
+            </div>
+
+            <div class="bean-lifecycle">
+                <div class="lifecycle-step" data-order="1">
+                    <h4>Bean Definition</h4>
+                    <p>Spring scans for @Component, @Service, @Repository, @Controller</p>
+                </div>
+                <div class="lifecycle-step" data-order="2">
+                    <h4>Instantiation</h4>
+                    <p>Constructor called, object created in memory</p>
+                </div>
+                <div class="lifecycle-step" data-order="3">
+                    <h4>Property Setting</h4>
+                    <p>@Value, @Autowired dependencies injected</p>
+                </div>
+                <div class="lifecycle-step" data-order="4">
+                    <h4>Aware Interfaces</h4>
+                    <p>BeanNameAware, ApplicationContextAware called</p>
+                </div>
+                <div class="lifecycle-step" data-order="5">
+                    <h4>Pre-Initialization</h4>
+                    <p>BeanPostProcessor.postProcessBeforeInitialization()</p>
+                </div>
+                <div class="lifecycle-step" data-order="6">
+                    <h4>Initialization</h4>
+                    <p>@PostConstruct, InitializingBean.afterPropertiesSet()</p>
+                </div>
+                <div class="lifecycle-step" data-order="7">
+                    <h4>Post-Initialization</h4>
+                    <p>BeanPostProcessor.postProcessAfterInitialization()</p>
+                </div>
+                <div class="lifecycle-step" data-order="8">
+                    <h4>Ready for Use</h4>
+                    <p>Bean is fully initialized and ready</p>
+                </div>
+                <div class="lifecycle-step" data-order="9">
+                    <h4>Destruction</h4>
+                    <p>@PreDestroy, DisposableBean.destroy()</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+@Component
+public class MyBean implements BeanNameAware, InitializingBean, DisposableBean {
+    
+    @Value("${app.name}")
+    private String appName;
+    
+    @Autowired
+    private SomeService someService;
+    
+    // 1. Constructor
+    public MyBean() {
+        System.out.println("1. Constructor called");
+    }
+    
+    // 2. Aware interface
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("4. BeanNameAware: " + name);
+    }
+    
+    // 3. @PostConstruct
+    @PostConstruct
+    public void init() {
+        System.out.println("6. @PostConstruct called");
+    }
+    
+    // 4. InitializingBean
+    @Override
+    public void afterPropertiesSet() {
+        System.out.println("6. afterPropertiesSet called");
+    }
+    
+    // 5. @PreDestroy
+    @PreDestroy
+    public void cleanup() {
+        System.out.println("9. @PreDestroy called");
+    }
+    
+    // 6. DisposableBean
+    @Override
+    public void destroy() {
+        System.out.println("9. destroy called");
+    }
+}
+            </div>
+        </div>
+
+        <!-- Architecture Section -->
+        <div id="architecture" class="content-section">
+            <h2 class="section-title">🏗️ Core Architecture</h2>
+            
+            <div class="architecture-diagram">
+                <div class="layer" style="border-color: #FF5722;">Application Layer (@Controller, @RestController)</div>
+                <div class="layer" style="border-color: #4CAF50;">Service Layer (@Service)</div>
+                <div class="layer" style="border-color: #2196F3;">Repository Layer (@Repository)</div>
+                <div class="layer" style="border-color: #9C27B0;">Data Layer (JPA, JDBC)</div>
+            </div>
+
+            <div class="diagram">
+                <h3>IoC Container Architecture</h3>
+                <div class="flow-container">
+                    <div class="flow-step">Bean Factory<br><small>Core Container</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">Application Context<br><small>Extended Container</small></div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">Web Application Context<br><small>Web-Aware</small></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Key Architectural Principles:</strong>
+                <br>• <strong>Inversion of Control (IoC):</strong> Framework manages object creation
+                <br>• <strong>Dependency Injection (DI):</strong> Dependencies provided externally
+                <br>• <strong>Aspect-Oriented Programming (AOP):</strong> Cross-cutting concerns
+                <br>• <strong>Convention over Configuration:</strong> Sensible defaults
+            </div>
+
+            <div class="code-block">
+// IoC Container manages these relationships
+@RestController
+public class UserController {
+    
+    @Autowired  // DI - Spring injects this
+    private UserService userService;
+    
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.findById(id);
+    }
+}
+
+@Service
+public class UserService {
+    
+    @Autowired  // DI - Spring injects this
+    private UserRepository userRepository;
+    
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+}
+            </div>
+        </div>
+
+        <!-- ORM & JPA Section -->
+        <div id="orm-jpa" class="content-section">
+            <h2 class="section-title">🗃️ ORM & JPA Fundamentals</h2>
+            
+            <div class="info-box">
+                <strong>ORM (Object-Relational Mapping)</strong> bridges the gap between object-oriented programming and relational databases by mapping Java objects to database tables.
+            </div>
+
+            <div class="orm-flow">
+                <div class="orm-layer">
+                    <h4>Java Objects</h4>
+                    <p>Classes, Fields, Methods</p>
+                </div>
+                <div class="arrow" style="color: white;">⟷</div>
+                <div class="orm-layer">
+                    <h4>ORM Layer</h4>
+                    <p>JPA/Hibernate</p>
+                </div>
+                <div class="arrow" style="color: white;">⟷</div>
+                <div class="orm-layer">
+                    <h4>Database</h4>
+                    <p>Tables, Columns, Rows</p>
+                </div>
+            </div>
+
+            <div class="diagram">
+                <h3>JPA Architecture Stack</h3>
+                <div class="architecture-diagram">
+                    <div class="layer" style="border-color: #FF5722;">Spring Data JPA (Repository Layer)</div>
+                    <div class="layer" style="border-color: #4CAF50;">JPA API (javax.persistence)</div>
+                    <div class="layer" style="border-color: #2196F3;">JPA Provider (Hibernate, EclipseLink)</div>
+                    <div class="layer" style="border-color: #9C27B0;">JDBC Driver</div>
+                    <div class="layer" style="border-color: #607D8B;">Database (MySQL, PostgreSQL, H2)</div>
+                </div>
+            </div>
+
+            <div class="jpa-annotations">
+                <div class="annotation-card">
+                    <h4>@Entity</h4>
+                    <p>Marks class as JPA entity</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@Table</h4>
+                    <p>Specifies table name</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@Id</h4>
+                    <p>Primary key field</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@GeneratedValue</h4>
+                    <p>Auto-generated values</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@Column</h4>
+                    <p>Column mapping</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@OneToMany</h4>
+                    <p>One-to-many relationship</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@ManyToOne</h4>
+                    <p>Many-to-one relationship</p>
+                </div>
+                <div class="annotation-card">
+                    <h4>@JoinColumn</h4>
+                    <p>Foreign key column</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+// JPA Entity Example
+@Entity
+@Table(name = "users")
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
+    
+    @Column(name = "email")
+    private String email;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List&lt;Order&gt; orders = new ArrayList&lt;&gt;();
+    
+    // Constructors, getters, setters...
+}
+
+@Entity
+@Table(name = "orders")  
+public class Order {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    // Constructors, getters, setters...
+}
+            </div>
+
+            <div class="entity-diagram">
+                <div class="entity-box">
+                    <div class="entity-title">User Entity</div>
+                    <div><strong>Fields:</strong></div>
+                    <div>• id (Primary Key)</div>
+                    <div>• username (Unique)</div>
+                    <div>• email</div>
+                    <div>• orders (One-to-Many)</div>
+                </div>
+                <div class="entity-box">
+                    <div class="entity-title">Order Entity</div>
+                    <div><strong>Fields:</strong></div>
+                    <div>• id (Primary Key)</div>
+                    <div>• orderDate</div>
+                    <div>• user (Many-to-One)</div>
+                    <div>• user_id (Foreign Key)</div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>Spring Data JPA Repository</h4>
+                <div class="code-block">
+// Repository Interface - No implementation needed!
+@Repository
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    
+    // Derived query methods
+    List&lt;User&gt; findByUsername(String username);
+    List&lt;User&gt; findByEmailContaining(String email);
+    
+    // Custom JPQL query
+    @Query("SELECT u FROM User u WHERE u.username LIKE %:name%")
+    List&lt;User&gt; findUsersWithNameLike(@Param("name") String name);
+    
+    // Native SQL query
+    @Query(value = "SELECT * FROM users WHERE email = ?1", nativeQuery = true)
+    User findByEmailNative(String email);
+}
+                </div>
+            </div>
+
+            <button class="interactive-btn" onclick="showJpaDemo()">🎬 Show JPA in Action</button>
+            <div id="jpa-demo" style="display: none;">
+                <div class="sql-visual">
+-- Auto-generated table creation
+CREATE TABLE users (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE orders (
+    id BIGINT NOT NULL AUTO_INCREMENT, 
+    order_date DATETIME,
+    user_id BIGINT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+                </div>
+            </div>
+        </div>
+
+        <!-- Hibernate Deep Dive Section -->
+        <div id="hibernate" class="content-section">
+            <h2 class="section-title">🔥 Hibernate Deep Dive</h2>
+            
+            <div class="info-box">
+                <strong>Hibernate</strong> is the most popular JPA implementation, providing powerful ORM capabilities with advanced features like caching, lazy loading, and query optimization.
+            </div>
+
+            <div class="diagram">
+                <h3>Hibernate Architecture</h3>
+                <div class="flow-container" style="flex-direction: column;">
+                    <div class="flow-step" style="width: 80%;">Application Layer</div>
+                    <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                    <div class="flow-step" style="width: 80%;">Hibernate Session Factory</div>
+                    <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                    <div class="flow-step" style="width: 80%;">Hibernate Session (First Level Cache)</div>
+                    <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                    <div class="flow-step" style="width: 80%;">Transaction Manager</div>
+                    <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                    <div class="flow-step" style="width: 80%;">JDBC Connection Pool</div>
+                    <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                    <div class="flow-step" style="width: 80%;">Database</div>
+                </div>
+            </div>
+
+            <div class="hibernate-lifecycle">
+                <div class="hibernate-state">
+                    <h4>🆕 Transient State</h4>
+                    <p><strong>Description:</strong> Object exists in memory but not associated with Hibernate session</p>
+                    <p><strong>Example:</strong> User user = new User("john");</p>
+                </div>
+                <div class="hibernate-state">
+                    <h4>💾 Persistent State</h4>
+                    <p><strong>Description:</strong> Object associated with Hibernate session and database</p>
+                    <p><strong>Example:</strong> session.save(user); // Now persistent</p>
+                </div>
+                <div class="hibernate-state">
+                    <h4>🔄 Detached State</h4>
+                    <p><strong>Description:</strong> Object was persistent but session is closed</p>
+                    <p><strong>Example:</strong> session.close(); // user becomes detached</p>
+                </div>
+                <div class="hibernate-state">
+                    <h4>🗑️ Removed State</h4>
+                    <p><strong>Description:</strong> Object marked for deletion</p>
+                    <p><strong>Example:</strong> session.delete(user);</p>
+                </div>
+            </div>
+
+            <div class="code-block">
+// Hibernate Entity Lifecycle Demo
+@Service
+@Transactional
+public class UserService {
+    
+    @Autowired
+    private EntityManager entityManager;
+    
+    public void demonstrateEntityStates() {
+        // 1. TRANSIENT - Object created but not managed
+        User user = new User("john", "john@example.com");
+        System.out.println("State: Transient");
+        
+        // 2. PERSISTENT - Object becomes managed by EntityManager
+        entityManager.persist(user);
+        System.out.println("State: Persistent - " + user.getId());
+        
+        // 3. Changes tracked automatically (dirty checking)
+        user.setEmail("john.doe@example.com"); // Will be updated in DB
+        
+        // 4. DETACHED - After transaction ends, entity becomes detached
+        // entityManager.detach(user);
+        
+        // 5. REMOVED - Mark for deletion
+        // entityManager.remove(user);
+    }
+}
+            </div>
+
+            <div class="diagram">
+                <h3>Hibernate Caching Strategy</h3>
+                <div class="entity-diagram">
+                    <div class="entity-box">
+                        <div class="entity-title">First Level Cache</div>
+                        <div><strong>Scope:</strong> Session Level</div>
+                        <div><strong>Automatic:</strong> Always enabled</div>
+                        <div><strong>Purpose:</strong> Avoid repeated queries in same session</div>
+                    </div>
+                    <div class="entity-box">
+                        <div class="entity-title">Second Level Cache</div>
+                        <div><strong>Scope:</strong> SessionFactory Level</div>
+                        <div><strong>Optional:</strong> Must be configured</div>
+                        <div><strong>Purpose:</strong> Share cache across sessions</div>
+                    </div>
+                    <div class="entity-box">
+                        <div class="entity-title">Query Cache</div>
+                        <div><strong>Scope:</strong> Query Results</div>
+                        <div><strong>Optional:</strong> Must be enabled</div>
+                        <div><strong>Purpose:</strong> Cache query result sets</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+// Hibernate Configuration in Spring Boot
+# application.properties
+
+# Show SQL queries
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Hibernate specific properties
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.properties.hibernate.hbm2ddl.auto=update
+
+# Second Level Cache Configuration
+spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+spring.jpa.properties.hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.EhCacheRegionFactory
+
+# Connection Pool
+spring.jpa.properties.hibernate.connection.pool_size=10
+spring.jpa.properties.hibernate.connection.autocommit=false
+
+# Batch processing
+spring.jpa.properties.hibernate.jdbc.batch_size=25
+spring.jpa.properties.hibernate.order_inserts=true
+spring.jpa.properties.hibernate.order_updates=true
+            </div>
+
+            <div class="explanation">
+                <h4>Advanced Hibernate Features</h4>
+                <div class="jpa-annotations">
+                    <div class="annotation-card">
+                        <h4>Lazy Loading</h4>
+                        <p>@OneToMany(fetch = FetchType.LAZY)</p>
+                    </div>
+                    <div class="annotation-card">
+                        <h4>Batch Fetching</h4>
+                        <p>@BatchSize(size = 10)</p>
+                    </div>
+                    <div class="annotation-card">
+                        <h4>Caching</h4>
+                        <p>@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)</p>
+                    </div>
+                    <div class="annotation-card">
+                        <h4>Custom Types</h4>
+                        <p>@Type(type = "json")</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="interactive-btn" onclick="showHibernateQueries()">🔍 Show Query Examples</button>
+            <div id="hibernate-queries" style="display: none;">
+                <div class="code-block">
+// JPQL (Java Persistence Query Language)
+@Query("SELECT u FROM User u WHERE u.username = :username")
+User findByUsername(@Param("username") String username);
+
+// Criteria API - Type-safe queries
+CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
+Root&lt;User&gt; user = query.from(User.class);
+query.select(user).where(cb.equal(user.get("username"), "john"));
+
+// HQL (Hibernate Query Language) - Similar to JPQL
+session.createQuery("FROM User u WHERE u.email LIKE :email", User.class)
+       .setParameter("email", "%@gmail.com")
+       .getResultList();
+
+// Native SQL - For complex queries
+@Query(value = "SELECT u.*, COUNT(o.id) as order_count " +
+               "FROM users u LEFT JOIN orders o ON u.id = o.user_id " +
+               "GROUP BY u.id", nativeQuery = true)
+List&lt;Object[]&gt; getUsersWithOrderCount();
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Hibernate Performance Tips:</strong>
+                <br>• Use <strong>@BatchSize</strong> for N+1 query problems
+                <br>• Enable <strong>second-level cache</strong> for read-heavy entities  
+                <br>• Use <strong>@JoinFetch</strong> to avoid lazy loading issues
+                <br>• Configure <strong>batch processing</strong> for bulk operations
+                <br>• Monitor queries with <strong>hibernate.show_sql=true</strong>
+            </div>
+        </div>
+        <div id="advanced" class="content-section">
+            <h2 class="section-title">🎓 Advanced Core Concepts</h2>
+            
+            <div class="diagram">
+                <h3>Auto-Configuration Magic</h3>
+                <div class="explanation">
+                    <strong>How Spring Boot decides what to configure:</strong>
+                    <br>1. Checks classpath for specific libraries
+                    <br>2. Looks for existing bean definitions
+                    <br>3. Reads application.properties/yml
+                    <br>4. Applies conditional logic (@ConditionalOnClass, @ConditionalOnMissingBean)
+                </div>
+            </div>
+
+            <div class="code-block">
+// Example Auto-Configuration Class
+@Configuration
+@ConditionalOnClass(DataSource.class)
+@ConditionalOnMissingBean(DataSource.class)
+@EnableConfigurationProperties(DataSourceProperties.class)
+public class DataSourceAutoConfiguration {
+    
+    @Bean
+    @Primary
+    public DataSource dataSource(DataSourceProperties properties) {
+        return properties.initializeDataSourceBuilder().build();
+    }
+}
+            </div>
+
+            <div class="diagram">
+                <h3>Profiles & Environment</h3>
+                <div class="flow-container">
+                    <div class="flow-step">Development<br><small>@Profile("dev")</small></div>
+                    <div class="flow-step">Testing<br><small>@Profile("test")</small></div>
+                    <div class="flow-step">Production<br><small>@Profile("prod")</small></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Configuration Priority (High to Low):</strong>
+                <br>1. Command line arguments
+                <br>2. System properties
+                <br>3. Environment variables
+                <br>4. application-{profile}.properties
+                <br>5. application.properties
+                <br>6. @PropertySource
+                <br>7. Default properties
+            </div>
+
+            <div class="diagram">
+                <h3>Actuator Endpoints</h3>
+                <div class="explanation">
+                    Production-ready features for monitoring and management:
+                    <br>• <strong>/health</strong> - Application health
+                    <br>• <strong>/metrics</strong> - Application metrics
+                    <br>• <strong>/info</strong> - Application information
+                    <br>• <strong>/beans</strong> - All Spring beans
+                    <br>• <strong>/env</strong> - Environment properties
+                </div>
+            </div>
+
+            <button class="interactive-btn" onclick="showActuatorDemo()">🔍 Show Actuator Demo</button>
+            <div id="actuator-demo" style="display: none;" class="code-block">
+# Enable actuator endpoints
+management.endpoints.web.exposure.include=health,info,metrics,beans
+management.endpoint.health.show-details=always
+
+# Custom health indicator
+@Component
+public class CustomHealthIndicator implements HealthIndicator {
+    @Override
+    public Health health() {
+        return Health.up()
+            .withDetail("custom", "All systems operational")
+            .build();
+    }
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section and activate tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function animateStartup() {
+            const steps = [
+                "1. SpringApplication.run() - Entry point called, creates SpringApplication instance",
+                "2. Environment Preparation - Loads application.properties, system properties, environment variables",
+                "3. ApplicationContext Creation - Creates appropriate context (Web/Servlet/Reactive)",
+                "4. Auto-Configuration - Scans classpath, applies conditional configurations",
+                "5. Bean Creation & Injection - Instantiates beans, resolves dependencies, injects values",
+                "6. Embedded Server Start - Starts Tomcat/Jetty/Undertow on configured port",
+                "7. Application Ready - Fires ApplicationReadyEvent, app is ready to serve requests"
+            ];
+            
+            const detailDiv = document.getElementById('step-detail');
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    detailDiv.innerHTML = `<strong>Current Step:</strong><br>${steps[currentStep]}`;
+                    detailDiv.style.background = '#e8f5e8';
+                    detailDiv.style.transition = 'background 0.5s ease';
+                    
+                    setTimeout(() => {
+                        detailDiv.style.background = '#f0f4f8';
+                    }, 1000);
+                    
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    detailDiv.innerHTML = "<strong>🎉 Startup Complete!</strong><br>Application is now ready to handle requests.";
+                    detailDiv.style.background = '#d4edda';
+                }
+            }, 2000);
+        }
+
+        function showActuatorDemo() {
+            const demo = document.getElementById('actuator-demo');
+            demo.style.display = demo.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Add some interactive hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const flowSteps = document.querySelectorAll('.flow-step, .lifecycle-step');
+            flowSteps.forEach(step => {
+                step.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05) translateY(-2px)';
+                });
+                step.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
